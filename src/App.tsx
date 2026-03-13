@@ -1,27 +1,56 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import Lenis from "lenis";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import Navbar from "@/components/Navbar";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import CursorParticles from "@/components/ui/CursorParticles";
+import Hero3D from "@/components/Hero3D";
+import StorySection from "@/components/StorySection";
+import About from "@/components/About";
+import Skills from "@/components/Skills";
+import Projects from "@/components/Projects";
+import Experience from "@/components/Experience";
+import GithubActivity from "@/components/GithubActivity";
+import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
 
-const queryClient = new QueryClient();
+const App = () => {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => lenis.destroy();
+  }, []);
+
+  return (
     <TooltipProvider>
-      <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <CursorParticles />
+      <ScrollProgress />
+      <Navbar />
+      <main>
+        <Hero3D />
+        <StorySection />
+        <About />
+        <Skills />
+        <Projects />
+        <Experience />
+        <GithubActivity />
+        <Contact />
+      </main>
+      <Footer />
     </TooltipProvider>
-  </QueryClientProvider>
-);
+  );
+};
 
 export default App;
