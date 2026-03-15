@@ -118,10 +118,9 @@ const ScrollStack = ({
       const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = Math.max(cardTop - scaleEndPositionPx, triggerStart + 1);
       const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
-      // End pinning before the next section enters view.
-      // Using a near-full viewport offset avoids cards bleeding into following sections.
-      const pinEndRaw = endElementTop - containerHeight * 0.95;
-      const minPinRange = Math.max(48, itemDistance * 0.3);
+      // End pinning a bit earlier so the next section never visually overlaps.
+      const pinEndRaw = endElementTop - containerHeight * 1.08;
+      const minPinRange = Math.max(40, itemDistance * 0.25);
       const pinEnd = Math.max(pinStart + minPinRange, pinEndRaw);
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
