@@ -1,6 +1,5 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { LazyMotion, domAnimation } from "framer-motion";
-import Lenis from "lenis";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
@@ -18,22 +17,6 @@ const CursorParticles = lazy(() => import("@/components/ui/CursorParticles"));
 const Hero3D = lazy(() => import("@/components/Hero3D"));
 
 const App = () => {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
-    return () => lenis.destroy();
-  }, []);
-
   return (
     <LazyMotion features={domAnimation}>
       <TooltipProvider>
