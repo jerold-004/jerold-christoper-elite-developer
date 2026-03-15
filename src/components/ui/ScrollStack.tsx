@@ -105,6 +105,10 @@ const ScrollStack = ({
     const endElement = scrollerRef.current?.querySelector(".scroll-stack-end");
 
     const endElementTop = endElement ? getElementOffset(endElement) : 0;
+    const hostSection = scrollerRef.current?.closest("section") as HTMLElement | null;
+    const nextSection = hostSection?.nextElementSibling as HTMLElement | null;
+    const nextSectionTop = nextSection ? nextSection.getBoundingClientRect().top + window.scrollY : 0;
+    const stackBoundaryTop = nextSectionTop > 0 ? Math.min(endElementTop || nextSectionTop, nextSectionTop) : endElementTop;
 
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
@@ -118,8 +122,8 @@ const ScrollStack = ({
       const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = Math.max(cardTop - scaleEndPositionPx, triggerStart + 1);
       const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
-      // End pinning a bit earlier so the next section never visually overlaps.
-      const pinEndRaw = endElementTop - containerHeight * 1.08;
+      // End pinning before the next section starts to prevent cross-section overlap.
+      const pinEndRaw = stackBoundaryTop - containerHeight * 1.08;
       const minPinRange = Math.max(40, itemDistance * 0.25);
       const pinEnd = Math.max(pinStart + minPinRange, pinEndRaw);
 
