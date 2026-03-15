@@ -1,4 +1,4 @@
-import { motion, useInView, useMotionValue, useTransform } from "motion/react";
+import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import "./Stack.css";
@@ -86,7 +86,6 @@ export default function Stack({
   onTopCardChange,
 }: StackProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: false, amount: 0.35 });
   const [isMobile, setIsMobile] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -142,7 +141,7 @@ export default function Stack({
   };
 
   useEffect(() => {
-    if (!autoplay || stack.length <= 1 || isPaused || !isInView) {
+    if (!autoplay || stack.length <= 1 || isPaused) {
       return;
     }
 
@@ -165,7 +164,7 @@ export default function Stack({
     }, autoplayDelay);
 
     return () => clearInterval(interval);
-  }, [autoplay, autoplayDelay, isInView, isPaused, stack.length]);
+  }, [autoplay, autoplayDelay, isPaused, stack.length]);
 
   return (
     <div

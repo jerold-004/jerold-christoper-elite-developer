@@ -5,7 +5,7 @@ const Footer = () => {
         <p className="text-sm text-muted-foreground">
           © 2026{" "}
           <span className="gradient-text font-semibold">Jerold Christoper</span>
-          . Built with passion and caffeine.
+          .All rights reserved.
         </p>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { skillCategories } from "@/data/skills";
@@ -8,7 +9,9 @@ type TechItemAnimationCustom = {
   direction: 1 | -1;
 };
 
-const techItemVariants = {
+const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const techItemVariants: Variants = {
   hidden: ({ direction }: TechItemAnimationCustom) => ({
     opacity: 0,
     x: 28 * direction,
@@ -21,28 +24,28 @@ const techItemVariants = {
     transition: {
       duration: 2.5,
       delay: index * 0.07,
-      ease: [0.22, 1, 0.36, 1],
+      ease: smoothEase,
       staggerChildren: 0.08,
     },
   }),
 };
 
-const techIconVariants = {
+const techIconVariants: Variants = {
   hidden: { opacity: 0, scale: 0.8, x: -6 },
   visible: {
     opacity: 1,
     scale: 1,
     x: 0,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.28, ease: smoothEase },
   },
 };
 
-const techTextVariants = {
+const techTextVariants: Variants = {
   hidden: { opacity: 0, x: 10 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.32, ease: smoothEase },
   },
 };
 

@@ -17,9 +17,12 @@ const About = () => {
         <motion.div variants={staggerItem} className="flex justify-center">
           <div className="relative">
             <div className="w-64 h-64 md:w-80 md:h-80 rounded-3xl overflow-hidden gradient-border">
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                <span className="text-6xl">👨‍💻</span>
-              </div>
+              <img
+                src="/me.jpeg"
+                alt="Jerold Christoper"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
             <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-2xl glass glow-primary flex items-center justify-center">
               <span className="text-sm font-mono text-primary">AIML</span>
