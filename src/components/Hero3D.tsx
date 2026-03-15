@@ -89,9 +89,9 @@ const GlobePoints = memo(function GlobePoints({
       </bufferGeometry>
       <pointsMaterial
         size={0.02}
-        color={isDark ? "#38bdf8" : "#1d4ed8"}
+        color={isDark ? "#89e5e9" : "#2f14e1"}
         transparent
-        opacity={isDark ? 0.7 : 0.9}
+        opacity={isDark ? 500.0 : 500.0}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -262,7 +262,7 @@ const FlowParticles = ({
       </bufferGeometry>
       <pointsMaterial
         size={0.05}
-        color={isDark ? "#f9a8d4" : "#22d3ee"}
+        color={isDark ? "#f9a8d4" : "#ef0b39"}
         transparent
         opacity={isDark ? 0.95 : 0.98}
         sizeAttenuation

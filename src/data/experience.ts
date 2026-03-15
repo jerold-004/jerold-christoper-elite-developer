@@ -3,7 +3,7 @@ export interface ExperienceItem {
   title: string;
   organization: string;
   period: string;
-  type: "internship" | "hackathon" | "project" | "achievement";
+  type: "internship" | "hackathon" | "project" | "achievement" | "academic";
   description: string;
   tech?: string[];
 }
