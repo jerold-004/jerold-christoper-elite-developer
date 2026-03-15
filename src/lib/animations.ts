@@ -1,5 +1,7 @@
 import type { Variants } from "framer-motion";
 
+const smoothEase = [0.22, 1, 0.36, 1] as const;
+
 export const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: (i: number = 0) => ({
@@ -8,7 +10,7 @@ export const fadeUp: Variants = {
     transition: {
       duration: 0.7,
       delay: i * 0.1,
-      ease: [0.25, 0.4, 0.25, 1],
+      ease: smoothEase,
     },
   }),
 };
@@ -30,7 +32,7 @@ export const scaleIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] },
+    transition: { duration: 0.5, ease: smoothEase },
   },
 };
 
@@ -39,7 +41,7 @@ export const slideInLeft: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] },
+    transition: { duration: 0.7, ease: smoothEase },
   },
 };
 
@@ -48,7 +50,7 @@ export const slideInRight: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] },
+    transition: { duration: 0.7, ease: smoothEase },
   },
 };
 
@@ -68,7 +70,21 @@ export const staggerItem: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] },
+    transition: { duration: 0.5, ease: smoothEase },
+  },
+};
+
+export const swapInOut: Variants = {
+  hidden: { opacity: 0, x: 24 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.38, ease: smoothEase },
+  },
+  exit: {
+    opacity: 0,
+    x: -16,
+    transition: { duration: 0.26, ease: "easeOut" },
   },
 };
 

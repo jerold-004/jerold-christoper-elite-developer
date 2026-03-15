@@ -1,7 +1,15 @@
-import { useState, useEffect } from "react";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import PillNav from "@/components/ui/PillNav";
 
-const navItems = [
+export interface NavbarItem {
+  label: string;
+  href: string;
+}
+
+const defaultNavItems: NavbarItem[] = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
@@ -10,41 +18,97 @@ const navItems = [
   { label: "Contact", href: "#contact" },
 ];
 
-const Navbar = () => {
+interface NavbarProps {
+  items?: NavbarItem[];
+  brand?: string;
+}
+
+const Navbar = ({ items = defaultNavItems, brand = "JC" }: NavbarProps) => {
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState("Home");
+  const [activeHref, setActiveHref] = useState(items[0]?.href ?? "#home");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { scrollY } = useScroll();
+  const { resolvedTheme, setTheme } = useTheme();
+
+  const sectionMap = useMemo(
+    () => new Map(items.map((item) => [item.href.replace("#", ""), item.label])),
+    [items],
+  );
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setScrolled(latest > 50);
+    setScrolled(latest > 14);
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      return;
     }
+
+    document.body.style.overflow = "";
   }, [mobileOpen]);
 
-  const handleClick = (href: string, label: string) => {
-    setActive(label);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) {
+            continue;
+          }
+
+          const id = entry.target.getAttribute("id") ?? "";
+          const label = sectionMap.get(id);
+
+          if (label) {
+            const target = items.find((item) => item.label === label);
+            if (target) {
+              setActiveHref(target.href);
+            }
+          }
+        }
+      },
+      {
+        rootMargin: "-45% 0px -45% 0px",
+        threshold: 0.01,
+      },
+    );
+
+    items.forEach((item) => {
+      const target = document.querySelector(item.href);
+      if (target) {
+        observer.observe(target);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [items, sectionMap]);
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
+  const navigateTo = (item: NavbarItem) => {
+    setActiveHref(item.href);
     setMobileOpen(false);
-    const el = document.querySelector(href);
-    el?.scrollIntoView({ behavior: "smooth" });
+    const target = document.querySelector(item.href);
+    target?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 relative ${
           scrolled
-            ? "glass-strong shadow-lg shadow-background/50"
-            : "bg-transparent"
+            ? "backdrop-blur-xl bg-background/55 border-b border-border/60 shadow-lg shadow-black/10 dark:shadow-black/40"
+            : "bg-transparent border-b border-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16">
@@ -53,72 +117,104 @@ const Navbar = () => {
             className="text-xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            JC
+            {brand}
           </motion.a>
 
-          {/* Desktop */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleClick(item.href, item.label)}
-                className={`relative text-sm font-medium transition-colors duration-300 ${
-                  active === item.label
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {item.label}
-                {active === item.label && (
-                  <motion.div
-                    layoutId="activeNav"
-                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-primary to-accent"
-                  />
-                )}
-              </button>
-            ))}
+          {/* Center: Pill Nav – perfectly centred in the bar */}
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
+            <PillNav
+              showLogo={false}
+              className="no-logo"
+              items={items}
+              activeHref={activeHref}
+              initialLoadAnimation
+              onNavigate={navigateTo}
+              baseColor="hsl(var(--primary))"
+              pillColor="hsl(var(--primary) / 0.10)"
+              hoveredPillTextColor="hsl(var(--foreground))"
+              pillTextColor="hsl(var(--foreground))"
+            />
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex flex-col gap-1.5 p-2"
-          >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="w-6 h-[2px] bg-foreground block"
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="w-6 h-[2px] bg-foreground block"
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="w-6 h-[2px] bg-foreground block"
-            />
-          </button>
+          <div className="ml-auto flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="hidden md:inline-flex h-10 w-10 rounded-full border border-border/70 bg-card/70 text-foreground transition-colors duration-300 hover:bg-secondary items-center justify-center"
+            >
+              {mounted && resolvedTheme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              className="md:hidden flex flex-col gap-1.5 p-2"
+              aria-label="Toggle menu"
+            >
+              <motion.span
+                animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+                className="w-6 h-[2px] bg-foreground block"
+              />
+              <motion.span
+                animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
+                className="w-6 h-[2px] bg-foreground block"
+              />
+              <motion.span
+                animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+                className="w-6 h-[2px] bg-foreground block"
+              />
+            </button>
+          </div>
         </div>
       </motion.nav>
 
-      {/* Mobile menu */}
-      <motion.div
-        initial={false}
-        animate={mobileOpen ? { x: 0 } : { x: "100%" }}
-        transition={{ type: "spring", damping: 25 }}
-        className="fixed inset-0 z-40 glass-strong md:hidden flex flex-col items-center justify-center gap-8"
-      >
-        {navItems.map((item, i) => (
-          <motion.button
-            key={item.label}
-            initial={{ opacity: 0, x: 50 }}
-            animate={mobileOpen ? { opacity: 1, x: 0, transition: { delay: i * 0.1 } } : { opacity: 0, x: 50 }}
-            onClick={() => handleClick(item.href, item.label)}
-            className="text-2xl font-semibold text-foreground hover:text-primary transition-colors"
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            className="fixed inset-0 z-40 glass-strong md:hidden flex flex-col items-center justify-center gap-8"
           >
-            {item.label}
-          </motion.button>
-        ))}
-      </motion.div>
+            {items.map((item, i) => (
+              <motion.button
+                key={item.label}
+                type="button"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.35 }}
+                onClick={() => navigateTo(item)}
+                className="text-2xl font-semibold text-foreground hover:text-primary transition-colors duration-300"
+              >
+                {item.label}
+              </motion.button>
+            ))}
+
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="mt-2 h-11 px-5 rounded-full border border-border/70 bg-card/70 text-foreground font-medium flex items-center gap-2"
+            >
+              {mounted && resolvedTheme === "dark" ? (
+                <>
+                  <Sun className="h-4 w-4" />
+                  Light Mode
+                </>
+              ) : (
+                <>
+                  <Moon className="h-4 w-4" />
+                  Dark Mode
+                </>
+              )}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

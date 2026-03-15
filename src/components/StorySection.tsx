@@ -1,5 +1,7 @@
-import { motion } from "framer-motion";
-import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { fadeUp, staggerContainer, staggerItem, swapInOut } from "@/lib/animations";
+import Stack from "@/components/ui/Stack";
 
 const stories = [
   {
@@ -26,6 +28,25 @@ const stories = [
 ];
 
 const StorySection = () => {
+  const [activeStory, setActiveStory] = useState(0);
+
+  const storyCards = useMemo(
+    () =>
+      stories.map((story, index) => (
+        <div
+          key={story.title}
+          className={`w-full h-full rounded-3xl bg-gradient-to-br ${story.gradient} glass border border-border/30 flex items-center justify-center`}
+        >
+          <span className="text-8xl md:text-9xl font-bold text-foreground/10">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
+      )),
+    [],
+  );
+
+  const currentStory = stories[activeStory] ?? stories[0];
+
   return (
     <section className="relative py-32 overflow-hidden">
       <motion.div
@@ -33,48 +54,75 @@ const StorySection = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="max-w-6xl mx-auto px-6 md:px-12 space-y-32"
+        className="max-w-6xl mx-auto px-6 md:px-12"
       >
-        {stories.map((story, index) => (
-          <motion.div
-            key={story.title}
-            variants={staggerItem}
-            className={`flex flex-col ${
-              index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-            } items-center gap-12 md:gap-20`}
-          >
-            {/* Text */}
-            <motion.div
-              variants={fadeUp}
-              className="flex-1 space-y-4"
-            >
-              <p className="text-sm font-mono text-primary tracking-wider uppercase">
-                {String(index + 1).padStart(2, "0")}
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold gradient-text">
-                {story.title}
-              </h2>
-              <p className="text-lg text-muted-foreground">{story.subtitle}</p>
-              <p className="text-muted-foreground leading-relaxed max-w-lg">
-                {story.description}
-              </p>
-            </motion.div>
-
-            {/* Visual */}
-            <motion.div
-              variants={fadeUp}
-              className="flex-1 w-full max-w-sm"
-            >
-              <div
-                className={`aspect-square rounded-3xl bg-gradient-to-br ${story.gradient} glass border border-border/30 flex items-center justify-center`}
-              >
-                <span className="text-8xl md:text-9xl font-bold text-foreground/5">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-            </motion.div>
+        <motion.div
+          variants={staggerItem}
+          className="grid items-center gap-10 md:gap-16 md:grid-cols-[minmax(280px,420px)_1fr]"
+        >
+          <motion.div variants={fadeUp} className="w-full max-w-sm md:max-w-md md:justify-self-start">
+            <div className="w-full aspect-square">
+              <Stack
+                cards={storyCards}
+                randomRotation={false}
+                sensitivity={180}
+                sendToBackOnClick
+                autoplay
+                autoplayDelay={2500}
+                pauseOnHover
+                mobileClickOnly
+                onTopCardChange={setActiveStory}
+              />
+            </div>
           </motion.div>
-        ))}
+
+          <motion.div variants={fadeUp} className="min-h-[280px] flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStory.title}
+                variants={swapInOut}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-4"
+                style={{ willChange: "transform, opacity" }}
+              >
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05, duration: 0.35 }}
+                  className="text-sm font-mono text-primary tracking-wider uppercase"
+                >
+                  {String(activeStory + 1).padStart(2, "0")}
+                </motion.p>
+                <motion.h2
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.38 }}
+                  className="text-3xl md:text-5xl font-bold gradient-text"
+                >
+                  {currentStory.title}
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, duration: 0.38 }}
+                  className="text-lg text-muted-foreground"
+                >
+                  {currentStory.subtitle}
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.42 }}
+                  className="text-muted-foreground leading-relaxed max-w-xl"
+                >
+                  {currentStory.description}
+                </motion.p>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
       </motion.div>
     </section>
   );

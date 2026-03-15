@@ -1,0 +1,51 @@
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.scroll-stack-scroller:not(.scroll-stack-use-window) {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
+.scroll-stack-scroller.scroll-stack-use-window {
+  overflow-y: visible;
+  height: auto;
+}
+
+.scroll-stack-inner {
+  padding: 0 1.5rem 8rem;
+  min-height: 0;
+}
+
+.scroll-stack-card {
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  min-height: 20rem;
+  width: 100%;
+  margin: 0;
+  padding: 2.5rem;
+  border-radius: 2.5rem;
+  box-sizing: border-box;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  position: relative;
+  outline: none;
+}
+
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}
