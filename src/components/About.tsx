@@ -15,18 +15,13 @@ const About = () => {
       >
         {/* Image */}
         <motion.div variants={staggerItem} className="flex justify-center">
-          <div className="relative">
-            <div className="w-64 h-64 md:w-80 md:h-80 rounded-3xl overflow-hidden gradient-border">
-              <img
-                src="/me.jpeg"
-                alt="Jerold Christoper"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-2xl glass glow-primary flex items-center justify-center">
-              <span className="text-sm font-mono text-primary">AIML</span>
-            </div>
+          <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden gradient-border">
+            <img
+              src="/me2.png"
+              alt="Jerold Christoper"
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
           </div>
         </motion.div>
 
