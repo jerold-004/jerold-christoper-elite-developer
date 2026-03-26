@@ -16,11 +16,27 @@ const Contact = () => {
       return;
     }
     setSending(true);
-    // Simulate send
-    await new Promise((r) => setTimeout(r, 1500));
-    toast.success("Message sent successfully! I'll get back to you soon.");
-    setForm({ name: "", email: "", message: "" });
-    setSending(false);
+    try {
+      const response = await fetch("http://localhost:3001/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send email");
+      }
+
+      toast.success("Message sent successfully! I'll get back to you soon.");
+      setForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to send message. Please try again.");
+      console.error("Email error:", error);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
