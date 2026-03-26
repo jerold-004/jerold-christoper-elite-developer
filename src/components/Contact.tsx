@@ -66,7 +66,7 @@ const Contact = () => {
           <div className="flex gap-4">
             {[
               { icon: Github, href: "https://github.com/JEROLD-creator653", label: "GitHub" },
-              { icon: Linkedin, href: "https://linkedin.com/in/jerold-christoper-g-992052327", label: "LinkedIn" },
+              { icon: Linkedin, href: "https://linkedin.com/in/jerold-christoper-g", label: "LinkedIn" },
               { icon: Mail, href: "mailto:jeroldchristoperg@gmail.com", label: "Email" },
             ].map(({ icon: Icon, href, label }) => (
               <motion.a
