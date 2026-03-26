@@ -5,6 +5,9 @@ import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const sendEmailEndpoint = apiBaseUrl ? `${apiBaseUrl}/api/send-email` : "/api/send-email";
+
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
@@ -17,7 +20,7 @@ const Contact = () => {
     }
     setSending(true);
     try {
-      const response = await fetch("http://localhost:3001/api/send-email", {
+      const response = await fetch(sendEmailEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
