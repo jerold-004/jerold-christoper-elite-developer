@@ -53,7 +53,8 @@ const techTextVariants: Variants = {
 const Skills = () => {
 
   return (
-    <SectionWrapper id="skills">
+    <SectionWrapper id="skills" className="relative overflow-hidden">
+      <BackgroundPaths />
       <div className="text-center mb-14">
         <p className="text-xs md:text-sm font-mono text-primary tracking-[0.24em] mb-3">TECH STACK</p>
         <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
