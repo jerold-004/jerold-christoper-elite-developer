@@ -3,6 +3,7 @@ import type { Variants } from "framer-motion";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { skillCategories } from "@/data/skills";
+import { BackgroundPaths } from "@/components/ui/background-paths";
 
 type TechItemAnimationCustom = {
   index: number;
