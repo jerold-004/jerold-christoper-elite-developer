@@ -2,6 +2,18 @@ import { GitHubCalendar } from "react-github-calendar";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import SectionWrapper from "@/components/ui/SectionWrapper";
+import "react-github-calendar/tooltips.css";
+
+const tooltipDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+const tooltipText = (date: string, count: number) => {
+  const contributionLabel = count === 1 ? "contribution" : "contributions";
+  return `${count} ${contributionLabel} on ${tooltipDateFormatter.format(new Date(date))}`;
+};
 
 const GithubActivity = () => {
   const { resolvedTheme } = useTheme();
@@ -30,6 +42,12 @@ const GithubActivity = () => {
           blockMargin={4}
           fontSize={14}
           showWeekdayLabels
+          tooltips={{
+            activity: {
+              text: (activity) => tooltipText(activity.date, activity.count),
+              withArrow: true,
+            },
+          }}
           theme={{
             light: [
               "hsl(214, 32%, 94%)",
