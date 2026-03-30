@@ -1,7 +1,6 @@
 import * as React from "react";
 import { AnimatePresence, motion, type HTMLMotionProps } from "framer-motion";
 import { Plus } from "lucide-react";
-import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -62,42 +61,35 @@ export function ExpandableCard({
 }: ExpandableCardProps) {
   const [active, setActive] = React.useState(() => (hideTrigger ? true : false));
   const cardRef = React.useRef<HTMLDivElement>(null);
-  const isClosingRef = React.useRef(false);
   const id = React.useId();
   const layoutSuffix = `${id}`;
   const sync = layoutSyncId ? layoutIdsForSync(layoutSyncId) : null;
 
-  const requestClose = React.useCallback(() => {
-    if (!active) return;
-    isClosingRef.current = true;
-    setActive(false);
-  }, [active]);
-
   React.useEffect(() => {
     if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") requestClose();
+      if (event.key === "Escape") setActive(false);
     };
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
-        requestClose();
+        setActive(false);
       }
     };
     window.addEventListener("keydown", onKeyDown);
-    document.addEventListener("click", handleClickOutside);
-    document.addEventListener("touchend", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("click", handleClickOutside);
-      document.removeEventListener("touchend", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [active, requestClose]);
+  }, [active]);
 
   const handleExitComplete = () => {
-    if (!isClosingRef.current) return;
-    isClosingRef.current = false;
     onOpenChange?.(false);
   };
+
+  const requestClose = () => setActive(false);
 
   const headerBadges = Boolean(badge || engagement);
 
@@ -127,120 +119,116 @@ export function ExpandableCard({
       ? undefined
       : `button-${title}-${layoutSuffix}`;
 
-  const overlay = (
-    <AnimatePresence onExitComplete={handleExitComplete}>
-      {active && (
-        <motion.div
-          key="expandable-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.12 } }}
-          transition={{ duration: 0.18 }}
-          className="fixed inset-0 z-[100] flex flex-col pointer-events-none"
-        >
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-md z-10 pointer-events-auto"
-          />
-          <div className="relative flex-1 grid place-items-center z-[100] sm:mt-16 pointer-events-none min-h-0">
-            <motion.div
-              layoutId={outerLayoutId}
-              ref={cardRef}
-              className={cn(
-                "w-full max-w-[850px] h-full max-h-[min(100dvh,900px)] flex flex-col overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-t-3xl bg-zinc-50 shadow-sm dark:shadow-none dark:bg-zinc-950 relative pointer-events-auto",
-                classNameExpanded,
-              )}
-              {...motionDivProps}
-              transition={sharedLayoutTransition}
-            >
-              <motion.div layoutId={imageLayoutId} transition={sharedLayoutTransition}>
-                <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
-                  <img
-                    src={src}
-                    alt={title}
-                    className="w-full h-80 object-cover object-center"
-                  />
-                </div>
-              </motion.div>
-              <div className="relative h-full before:fixed before:inset-x-0 before:bottom-0 before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
-                <div className="flex justify-between items-start p-8 h-auto gap-4">
-                  <div className="min-w-0">
-                    <motion.h3
-                      layoutId={titleLayoutId}
-                      id={hideTrigger ? `card-title-${layoutSuffix}` : undefined}
-                      className="font-semibold text-black dark:text-white text-4xl sm:text-4xl"
-                      transition={sharedLayoutTransition}
-                    >
-                      {title}
-                    </motion.h3>
-                    {headerBadges ? (
-                      <motion.div
-                        layoutId={descriptionLayoutId}
-                        transition={sharedLayoutTransition}
-                        className="mt-2 flex flex-wrap gap-2"
-                      >
-                        {badge && (
-                          <Badge variant="default" className="text-[11px] px-2.5 py-1 font-semibold">
-                            {badge}
-                          </Badge>
-                        )}
-                        {engagement && (
-                          <Badge
-                            variant="secondary"
-                            className="text-[11px] px-2.5 py-1 font-semibold bg-black/70 text-white border border-white/20 hover:bg-black/80 dark:bg-white/10 dark:text-white dark:border-white/20"
-                          >
-                            {engagement}
-                          </Badge>
-                        )}
-                      </motion.div>
-                    ) : (
-                      <motion.p
-                        layoutId={descriptionLayoutId}
-                        className="text-zinc-500 dark:text-zinc-400 text-lg mt-0.5"
-                        transition={sharedLayoutTransition}
-                      >
-                        {description}
-                      </motion.p>
-                    )}
-                  </div>
-                  <motion.button
-                    type="button"
-                    aria-label="Close card"
-                    layoutId={buttonLayoutId}
-                    className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-950 text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-950 dark:text-white/70 text-black/70 border border-gray-200/90 dark:border-zinc-900 hover:border-gray-300/90 hover:text-black dark:hover:text-white dark:hover:border-zinc-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    transition={sharedLayoutTransition}
-                    onClick={requestClose}
-                  >
-                    <motion.div
-                      animate={{ rotate: active ? 45 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Plus className="size-5" strokeWidth={2} />
-                    </motion.div>
-                  </motion.button>
-                </div>
-                <div className="relative px-6 sm:px-8">
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-zinc-500 dark:text-zinc-400 text-base pb-10 flex flex-col items-start gap-4 overflow-auto [&_h4]:text-black dark:[&_h4]:text-white [&_h4]:font-medium"
-                  >
-                    {children}
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-
   return (
     <>
-      {typeof document !== "undefined" ? createPortal(overlay, document.body) : overlay}
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {active && (
+          <motion.div
+            key="expandable-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.12 } }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-[100] flex flex-col pointer-events-none"
+          >
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-md z-10 pointer-events-auto"
+            />
+            <div className="relative flex-1 grid place-items-center z-[100] sm:mt-16 pointer-events-none min-h-0">
+              <motion.div
+                layoutId={outerLayoutId}
+                ref={cardRef}
+                className={cn(
+                  "w-full max-w-[850px] h-full max-h-[min(100dvh,900px)] flex flex-col overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-t-3xl bg-zinc-50 shadow-sm dark:shadow-none dark:bg-zinc-950 relative pointer-events-auto",
+                  classNameExpanded,
+                )}
+                {...motionDivProps}
+                transition={sharedLayoutTransition}
+              >
+                <motion.div layoutId={imageLayoutId} transition={sharedLayoutTransition}>
+                  <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
+                    <img
+                      src={src}
+                      alt={title}
+                      className="w-full h-80 object-cover object-center"
+                    />
+                  </div>
+                </motion.div>
+                <div className="relative h-full before:fixed before:inset-x-0 before:bottom-0 before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
+                  <div className="flex justify-between items-start p-8 h-auto gap-4">
+                    <div className="min-w-0">
+                      <motion.h3
+                        layoutId={titleLayoutId}
+                        id={hideTrigger ? `card-title-${layoutSuffix}` : undefined}
+                        className="font-semibold text-black dark:text-white text-4xl sm:text-4xl"
+                        transition={sharedLayoutTransition}
+                      >
+                        {title}
+                      </motion.h3>
+                      {headerBadges ? (
+                        <motion.div
+                          layoutId={descriptionLayoutId}
+                          transition={sharedLayoutTransition}
+                          className="mt-2 flex flex-wrap gap-2"
+                        >
+                          {badge && (
+                            <Badge variant="default" className="text-[11px] px-2.5 py-1 font-semibold">
+                              {badge}
+                            </Badge>
+                          )}
+                          {engagement && (
+                            <Badge
+                              variant="secondary"
+                              className="text-[11px] px-2.5 py-1 font-semibold bg-black/70 text-white border border-white/20 hover:bg-black/80 dark:bg-white/10 dark:text-white dark:border-white/20"
+                            >
+                              {engagement}
+                            </Badge>
+                          )}
+                        </motion.div>
+                      ) : (
+                        <motion.p
+                          layoutId={descriptionLayoutId}
+                          className="text-zinc-500 dark:text-zinc-400 text-lg mt-0.5"
+                          transition={sharedLayoutTransition}
+                        >
+                          {description}
+                        </motion.p>
+                      )}
+                    </div>
+                    <motion.button
+                      type="button"
+                      aria-label="Close card"
+                      layoutId={buttonLayoutId}
+                      className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-950 text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-950 dark:text-white/70 text-black/70 border border-gray-200/90 dark:border-zinc-900 hover:border-gray-300/90 hover:text-black dark:hover:text-white dark:hover:border-zinc-800 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      transition={sharedLayoutTransition}
+                      onClick={requestClose}
+                    >
+                      <motion.div
+                        animate={{ rotate: active ? 45 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Plus className="size-5" strokeWidth={2} />
+                      </motion.div>
+                    </motion.button>
+                  </div>
+                  <div className="relative px-6 sm:px-8">
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-zinc-500 dark:text-zinc-400 text-base pb-10 flex flex-col items-start gap-4 overflow-auto [&_h4]:text-black dark:[&_h4]:text-white [&_h4]:font-medium"
+                    >
+                      {children}
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!hideTrigger && (
         <motion.div
