@@ -6,14 +6,16 @@ import {
   TestimonialCarousel,
   type SpotlightItem,
 } from "@/components/ui/profile-card-testimonial-carousel";
-import { ExpandableCard } from "@/components/ui/expandable-card";
+import { ExpandableCard } from "./ui/expandable-card";
 import { projects, type Project } from "@/data/projects";
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [detailsOpenNonce, setDetailsOpenNonce] = useState(0);
 
   const openProjectDetails = (project: Project) => {
     setSelectedProject(project);
+    setDetailsOpenNonce((n) => n + 1);
   };
 
   const resolveLink = (link: string) => {
@@ -81,7 +83,7 @@ const Projects = () => {
 
         {selectedProject && (
           <ExpandableCard
-            key={selectedProject.id}
+            key={`${selectedProject.id}-${detailsOpenNonce}`}
             hideTrigger
             layoutSyncId={selectedProject.id}
             title={selectedProject.title}
