@@ -3,7 +3,6 @@ import type { Variants } from "framer-motion";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { skillCategories } from "@/data/skills";
-import { BackgroundPaths } from "@/components/ui/background-paths";
 
 type TechItemAnimationCustom = {
   index: number;
@@ -54,7 +53,6 @@ const Skills = () => {
 
   return (
     <SectionWrapper id="skills" className="relative overflow-hidden">
-      <BackgroundPaths />
       <div className="text-center mb-14">
         <p className="text-xs md:text-sm font-mono text-primary tracking-[0.24em] mb-3">TECH STACK</p>
         <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">

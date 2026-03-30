@@ -2,12 +2,10 @@ import { motion } from "framer-motion";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations";
 import Counter from "@/components/ui/Counter";
-import { ElegantShapeBackground } from "@/components/ui/shape-landing-hero";
 
 const About = () => {
   return (
     <SectionWrapper id="about" className="relative overflow-hidden">
-      <ElegantShapeBackground />
       <motion.div
         variants={staggerContainer}
         initial="hidden"

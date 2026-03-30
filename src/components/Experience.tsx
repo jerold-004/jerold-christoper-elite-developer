@@ -11,7 +11,7 @@ const typeColors: Record<string, string> = {
 
 const Experience = () => {
   return (
-    <section id="experience" className="relative py-24 px-6 md:px-12 lg:px-20">
+    <section id="experience" className="relative pt-12 pb-24 md:pt-14 md:pb-24 lg:pt-16 lg:pb-24 px-6 md:px-12 lg:px-20">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 md:mb-12">
           <p className="text-sm font-mono text-primary tracking-wider mb-4">JOURNEY</p>
