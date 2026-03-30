@@ -1,4 +1,5 @@
 const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
+const PUBLIC_GITHUB_CONTRIBUTIONS_API_URL = "https://github-contributions-api.jogruber.de/v4/";
 
 const LEVEL_MAP = {
   NONE: 0,
@@ -38,20 +39,55 @@ function normalizeData(days) {
   }));
 }
 
+function normalizePublicData(days) {
+  return days.map((day) => ({
+    date: day.date,
+    count: day.count,
+    level: day.level,
+  }));
+}
+
+async function fetchPublicContributions(username, range) {
+  const response = await fetch(`${PUBLIC_GITHUB_CONTRIBUTIONS_API_URL}${username}?y=${range}`);
+  const payload = await response.json();
+
+  if (!response.ok || payload.error) {
+    throw new Error(payload.error || "Failed to fetch public GitHub contributions");
+  }
+
+  const data = normalizePublicData(payload.contributions ?? []);
+  const total = data.reduce((sum, item) => sum + item.count, 0);
+
+  return {
+    username,
+    range,
+    total,
+    data,
+    source: "public-fallback",
+    exact: false,
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    return res.status(500).json({
-      error: "Missing GITHUB_TOKEN. Add it to your environment to fetch exact contribution data.",
-    });
-  }
-
   const username = (req.query?.username || process.env.GITHUB_USERNAME || "JEROLD-creator653").trim();
   const range = (req.query?.range || "last").trim();
+
+  if (!token) {
+    try {
+      const fallback = await fetchPublicContributions(username, range);
+      return res.status(200).json(fallback);
+    } catch (error) {
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : "Failed to fetch contributions",
+      });
+    }
+  }
+
   const { from, to } = resolveDateRange(range);
 
   const query = `
@@ -105,10 +141,16 @@ export default async function handler(req, res) {
       total,
       data,
       source: "github-graphql",
+      exact: true,
     });
   } catch (error) {
-    return res.status(500).json({
-      error: error instanceof Error ? error.message : "Internal server error",
-    });
+    try {
+      const fallback = await fetchPublicContributions(username, range);
+      return res.status(200).json(fallback);
+    } catch (fallbackError) {
+      return res.status(500).json({
+        error: fallbackError instanceof Error ? fallbackError.message : "Internal server error",
+      });
+    }
   }
 }

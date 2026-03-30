@@ -58,8 +58,8 @@ const Projects = () => {
   );
 
   return (
-    <SectionWrapper id="projects">
-      <div className="text-center mb-16">
+    <SectionWrapper id="projects" className="pb-4 md:pb-6 lg:pb-8">
+      <div className="text-center mb-20">
         <p className="text-sm font-mono text-primary tracking-wider mb-4">PORTFOLIO</p>
         <h2 className="text-3xl md:text-4xl font-bold">
           Featured <span className="gradient-text">Projects</span>
@@ -67,7 +67,7 @@ const Projects = () => {
       </div>
 
       <LayoutGroup id="projects-expand">
-        <div className="mb-20">
+        <div className={selectedProject ? "mb-10" : "mb-2"}>
           <TestimonialCarousel
             items={spotlightItems}
             onLearnMore={(item) => {

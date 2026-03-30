@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const fromEmail = process.env.RESEND_FROM_EMAIL || "contact@jerold-dev.me";
 const toEmail = process.env.RESEND_TO_EMAIL || "jeroldchristoperg@gmail.com";
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
+const PUBLIC_GITHUB_CONTRIBUTIONS_API_URL = "https://github-contributions-api.jogruber.de/v4/";
 const LEVEL_MAP = {
   NONE: 0,
   FIRST_QUARTILE: 1,
@@ -51,7 +53,34 @@ const normalizeContributionData = (days) =>
     level: LEVEL_MAP[day.contributionLevel] ?? 0,
   }));
 
+const normalizePublicContributionData = (days) =>
+  days.map((day) => ({
+    date: day.date,
+    count: day.count,
+    level: day.level,
+  }));
+
+const fetchPublicContributions = async (username, range) => {
+  const response = await fetch(`${PUBLIC_GITHUB_CONTRIBUTIONS_API_URL}${username}?y=${range}`);
+  const payload = await response.json();
+
+  if (!response.ok || payload.error) {
+    throw new Error(payload.error || "Failed to fetch public GitHub contributions");
+  }
+
+  const data = normalizePublicContributionData(payload.contributions ?? []);
+  const total = data.reduce((sum, item) => sum + item.count, 0);
+
+  return { username, range, total, data, source: "public-fallback", exact: false };
+};
+
 app.post("/api/send-email", async (req, res) => {
+  if (!resend) {
+    return res.status(500).json({
+      error: "Email API is not configured. Set RESEND_API_KEY in environment.",
+    });
+  }
+
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
@@ -105,14 +134,20 @@ app.post("/api/send-email", async (req, res) => {
 
 app.get("/api/github-contributions", async (req, res) => {
   const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    return res.status(500).json({
-      error: "Missing GITHUB_TOKEN. Add it to your environment to fetch exact contribution data.",
-    });
-  }
-
   const username = (req.query.username || process.env.GITHUB_USERNAME || "JEROLD-creator653").trim();
   const range = (req.query.range || "last").trim();
+
+  if (!token) {
+    try {
+      const fallback = await fetchPublicContributions(username, range);
+      return res.status(200).json(fallback);
+    } catch (error) {
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : "Failed to fetch contributions",
+      });
+    }
+  }
+
   const { from, to } = resolveDateRange(range);
 
   const query = `
@@ -156,12 +191,17 @@ app.get("/api/github-contributions", async (req, res) => {
     const total = payload.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ??
       data.reduce((sum, item) => sum + item.count, 0);
 
-    return res.status(200).json({ username, range, total, data, source: "github-graphql" });
+    return res.status(200).json({ username, range, total, data, source: "github-graphql", exact: true });
   } catch (error) {
-    console.error("Error fetching GitHub contributions:", error);
-    return res.status(500).json({
-      error: error instanceof Error ? error.message : "Internal server error",
-    });
+    try {
+      const fallback = await fetchPublicContributions(username, range);
+      return res.status(200).json(fallback);
+    } catch (fallbackError) {
+      console.error("Error fetching GitHub contributions:", fallbackError);
+      return res.status(500).json({
+        error: fallbackError instanceof Error ? fallbackError.message : "Internal server error",
+      });
+    }
   }
 });
 
