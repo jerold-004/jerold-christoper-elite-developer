@@ -13,6 +13,44 @@ const toEmail = process.env.RESEND_TO_EMAIL || "jeroldchristoperg@gmail.com";
 app.use(cors());
 app.use(express.json());
 
+const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
+const LEVEL_MAP = {
+  NONE: 0,
+  FIRST_QUARTILE: 1,
+  SECOND_QUARTILE: 2,
+  THIRD_QUARTILE: 3,
+  FOURTH_QUARTILE: 4,
+};
+
+const resolveDateRange = (range) => {
+  const now = new Date();
+  const to = now.toISOString();
+
+  if (range === "last") {
+    const fromDate = new Date(now);
+    fromDate.setDate(fromDate.getDate() - 365);
+    return { from: fromDate.toISOString(), to };
+  }
+
+  const year = Number(range);
+  if (Number.isFinite(year) && year >= 2008 && year <= 2100) {
+    const from = new Date(Date.UTC(year, 0, 1, 0, 0, 0)).toISOString();
+    const toYear = new Date(Date.UTC(year, 11, 31, 23, 59, 59)).toISOString();
+    return { from, to: toYear };
+  }
+
+  const fallback = new Date(now);
+  fallback.setDate(fallback.getDate() - 365);
+  return { from: fallback.toISOString(), to };
+};
+
+const normalizeContributionData = (days) =>
+  days.map((day) => ({
+    date: day.date,
+    count: day.contributionCount,
+    level: LEVEL_MAP[day.contributionLevel] ?? 0,
+  }));
+
 app.post("/api/send-email", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -62,6 +100,68 @@ app.post("/api/send-email", async (req, res) => {
   } catch (error) {
     console.error("Error sending email:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/github-contributions", async (req, res) => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    return res.status(500).json({
+      error: "Missing GITHUB_TOKEN. Add it to your environment to fetch exact contribution data.",
+    });
+  }
+
+  const username = (req.query.username || process.env.GITHUB_USERNAME || "JEROLD-creator653").trim();
+  const range = (req.query.range || "last").trim();
+  const { from, to } = resolveDateRange(range);
+
+  const query = `
+    query($login: String!, $from: DateTime!, $to: DateTime!) {
+      user(login: $login) {
+        contributionsCollection(from: $from, to: $to) {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                date
+                contributionCount
+                contributionLevel
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const ghResponse = await fetch(GITHUB_GRAPHQL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query, variables: { login: username, from, to } }),
+    });
+
+    const payload = await ghResponse.json();
+    if (!ghResponse.ok || payload.errors?.length) {
+      const message = payload.errors?.[0]?.message || "Failed to fetch GitHub contributions";
+      return res.status(ghResponse.status || 500).json({ error: message });
+    }
+
+    const weeks = payload.data?.user?.contributionsCollection?.contributionCalendar?.weeks ?? [];
+    const days = weeks.flatMap((week) => week.contributionDays || []);
+    const data = normalizeContributionData(days);
+    const total = payload.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ??
+      data.reduce((sum, item) => sum + item.count, 0);
+
+    return res.status(200).json({ username, range, total, data, source: "github-graphql" });
+  } catch (error) {
+    console.error("Error fetching GitHub contributions:", error);
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : "Internal server error",
+    });
   }
 });
 

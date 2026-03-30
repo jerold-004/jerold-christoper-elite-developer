@@ -471,7 +471,7 @@ const Hero3D = () => {
           style={{ willChange: "transform, opacity" }}
         >
           <AnimatedText
-            texts={["Full Stack Developer", "AI/ML Enthusiast", "Problem Solver"]}
+            texts={["AI Engineer – Vision Systems", "Machine Learning Engineer – Applied Systems", "Intelligent Systems Developer","Full Stack Developer","Computational Intelligence Engineer",]}
             className="inline-flex items-center justify-center"
           />
         </motion.div>
