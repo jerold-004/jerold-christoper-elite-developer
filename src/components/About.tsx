@@ -42,6 +42,10 @@ const About = () => {
             communities and professional profiles.
           </p>
           <p className="text-muted-foreground leading-relaxed">
+            I also work as a web developer in Tamil Nadu, build scalable platforms as an ecommerce
+            website developer, and deliver startup web solutions India teams can launch with quickly.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
             I actively explore the intersection of artificial intelligence, backend systems, and modern
             web technologies to create impactful digital products. My work includes a machine
             learning-based UPI fraud detection system, PathFindAR intelligent navigation platform,
