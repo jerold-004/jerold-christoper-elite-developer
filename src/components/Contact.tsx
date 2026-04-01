@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Github, Linkedin, Mail } from "lucide-react";
+import { Send, Github, Linkedin, Mail, Instagram, Code2 } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
@@ -67,6 +67,8 @@ const Contact = () => {
             {[
               { icon: Github, href: "https://github.com/JEROLD-creator653", label: "GitHub" },
               { icon: Linkedin, href: "https://linkedin.com/in/jerold-christoper-g", label: "LinkedIn" },
+              { icon: Code2, href: "https://leetcode.com/u/jerold_0808/", label: "LeetCode" },
+              { icon: Instagram, href: "https://www.instagram.com/jerold_0808/", label: "Instagram" },
               { icon: Mail, href: "mailto:jeroldchristoperg@gmail.com", label: "Email" },
             ].map(({ icon: Icon, href, label }) => (
               <motion.a

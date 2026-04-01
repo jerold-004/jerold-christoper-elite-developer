@@ -38,6 +38,10 @@ const About = () => {
             at Sri Sairam Engineering College.
           </p>
           <p className="text-muted-foreground leading-relaxed">
+            You may also find me online as Jerold Christoper G or jerold0808 across developer
+            communities and professional profiles.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
             I actively explore the intersection of artificial intelligence, backend systems, and modern
             web technologies to create impactful digital products. My work includes a machine
             learning-based UPI fraud detection system, PathFindAR intelligent navigation platform,

@@ -1,0 +1,42 @@
+# YAML helper config for sitemap management and search engine submission.
+# Update site.url to your real production domain.
+
+site:
+  name: Jerold Christoper Portfolio
+  url: https://www.jerold-dev.me
+  sitemap_url: https://www.jerold-dev.me/sitemap.xml
+  robots_url: https://www.jerold-dev.me/robots.txt
+
+# Only include real crawlable URLs (no section anchors).
+urls:
+  - loc: /
+    changefreq: weekly
+    priority: 1.0
+
+search_consoles:
+  google:
+    submit_endpoint: "https://www.google.com/ping?sitemap=https://www.jerold-dev.me/sitemap.xml"
+    console_url: "https://search.google.com/search-console"
+
+  bing:
+    submit_endpoint: "https://www.bing.com/ping?sitemap=https://www.jerold-dev.me/sitemap.xml"
+    webmaster_url: "https://www.bing.com/webmasters"
+    notes:
+      - "Bing indexing data is used by Microsoft Edge discovery surfaces."
+      - "Yahoo and DuckDuckGo largely rely on Bing's index for crawling/discovery."
+
+  yahoo:
+    submit_via: bing_webmaster_tools
+    note: "No separate modern Yahoo sitemap ping endpoint."
+
+  duckduckgo:
+    submit_via: bing_webmaster_tools
+    note: "No direct sitemap submission endpoint."
+
+# Optional: IndexNow can speed URL discovery for Bing ecosystem consumers.
+indexnow:
+  enabled: false
+  endpoint: "https://api.indexnow.org/indexnow"
+  host: www.jerold-dev.me
+  key: "replace-with-your-indexnow-key"
+  key_location: "https://www.jerold-dev.me/replace-with-your-indexnow-key.txt"
