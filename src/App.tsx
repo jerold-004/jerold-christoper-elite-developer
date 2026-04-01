@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +16,35 @@ import Footer from "@/components/Footer";
 const CursorParticles = lazy(() => import("@/components/ui/CursorParticles"));
 const Hero3D = lazy(() => import("@/components/Hero3D"));
 
+const pathToSectionId: Record<string, string> = {
+  "/": "home",
+  "/home": "home",
+  "/about": "about",
+  "/skills": "skills",
+  "/projects": "projects",
+  "/experience": "experience",
+  "/experiece": "experience",
+  "/contact": "contact",
+};
+
 const App = () => {
+  useEffect(() => {
+    const scrollToPathSection = () => {
+      const normalized = window.location.pathname.toLowerCase().replace(/\/+$/, "") || "/";
+      const sectionId = pathToSectionId[normalized] ?? "home";
+      const target = document.getElementById(sectionId);
+      target?.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+
+    const timer = window.setTimeout(scrollToPathSection, 0);
+    window.addEventListener("popstate", scrollToPathSection);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("popstate", scrollToPathSection);
+    };
+  }, []);
+
   return (
     <LazyMotion features={domAnimation}>
       <TooltipProvider>

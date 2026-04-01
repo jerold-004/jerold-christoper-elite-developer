@@ -23,6 +23,15 @@ interface NavbarProps {
   brand?: string;
 }
 
+const hrefToPath = (href: string): string => {
+  const id = href.replace("#", "").trim().toLowerCase();
+  if (!id || id === "home") {
+    return "/";
+  }
+
+  return `/${id}`;
+};
+
 const Navbar = ({ items = defaultNavItems, brand = "JC" }: NavbarProps) => {
   const [scrolled, setScrolled] = useState(false);
   const [activeHref, setActiveHref] = useState(items[0]?.href ?? "#home");
@@ -97,6 +106,7 @@ const Navbar = ({ items = defaultNavItems, brand = "JC" }: NavbarProps) => {
     setMobileOpen(false);
     const target = document.querySelector(item.href);
     target?.scrollIntoView({ behavior: "smooth" });
+    window.history.pushState({}, "", hrefToPath(item.href));
   };
 
   return (
@@ -113,9 +123,13 @@ const Navbar = ({ items = defaultNavItems, brand = "JC" }: NavbarProps) => {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16">
           <motion.a
-            href="#home"
+            href="/"
             className="text-xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateTo({ label: "Home", href: "#home" });
+            }}
           >
             {brand}
           </motion.a>
