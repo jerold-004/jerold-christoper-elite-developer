@@ -33,15 +33,24 @@ const App = () => {
       const normalized = window.location.pathname.toLowerCase().replace(/\/+$/, "") || "/";
       const sectionId = pathToSectionId[normalized] ?? "home";
       const target = document.getElementById(sectionId);
-      target?.scrollIntoView({ behavior: "auto", block: "start" });
+      if (!target) {
+        return;
+      }
+
+      const navOffset = 88;
+      const top = window.scrollY + target.getBoundingClientRect().top - navOffset;
+      window.scrollTo({ top: Math.max(top, 0), behavior: "auto" });
     };
 
-    const timer = window.setTimeout(scrollToPathSection, 0);
+    // Re-run after layout settles (lazy sections/canvas can shift positions).
+    const timers = [0, 250, 800].map((delay) => window.setTimeout(scrollToPathSection, delay));
     window.addEventListener("popstate", scrollToPathSection);
+    window.addEventListener("load", scrollToPathSection);
 
     return () => {
-      window.clearTimeout(timer);
+      timers.forEach((timer) => window.clearTimeout(timer));
       window.removeEventListener("popstate", scrollToPathSection);
+      window.removeEventListener("load", scrollToPathSection);
     };
   }, []);
 
