@@ -27,10 +27,47 @@ const pathToSectionId: Record<string, string> = {
   "/contact": "contact",
 };
 
+const normalizePath = (pathname: string): string => pathname.toLowerCase().replace(/\/+$/, "") || "/";
+
+const canonicalPathMap: Record<string, string> = {
+  "/home": "/",
+  "/experiece": "/experience",
+};
+
+const pathTitles: Record<string, string> = {
+  "/": "Jerold Christoper | AI Engineer and Full Stack Developer",
+  "/about": "About | Jerold Christoper",
+  "/skills": "Skills | Jerold Christoper",
+  "/projects": "Projects | Jerold Christoper",
+  "/experience": "Experience | Jerold Christoper",
+  "/contact": "Contact | Jerold Christoper",
+};
+
 const App = () => {
   useEffect(() => {
+    const updateSeoForPath = (path: string) => {
+      const baseUrl = "https://jerold-dev.me";
+      const canonicalPath = canonicalPathMap[path] ?? path;
+      const canonicalUrl = `${baseUrl}${canonicalPath}`;
+
+      const canonicalLink = document.querySelector('link[rel="canonical"]');
+      canonicalLink?.setAttribute("href", canonicalUrl);
+
+      const ogUrl = document.querySelector('meta[property="og:url"]');
+      ogUrl?.setAttribute("content", canonicalUrl);
+
+      const title = pathTitles[canonicalPath] ?? pathTitles["/"];
+      document.title = title;
+      const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+      twitterTitle?.setAttribute("content", title);
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      ogTitle?.setAttribute("content", title);
+    };
+
     const scrollToPathSection = () => {
-      const normalized = window.location.pathname.toLowerCase().replace(/\/+$/, "") || "/";
+      const normalized = normalizePath(window.location.pathname);
+      updateSeoForPath(normalized);
+
       const sectionId = pathToSectionId[normalized] ?? "home";
       const target = document.getElementById(sectionId);
       if (!target) {

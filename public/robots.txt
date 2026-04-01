@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.jerold-dev.me/sitemap.xml
-Host: www.jerold-dev.me
+Sitemap: https://jerold-dev.me/sitemap.xml
+Host: jerold-dev.me

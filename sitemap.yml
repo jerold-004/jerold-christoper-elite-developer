@@ -3,9 +3,9 @@
 
 site:
   name: Jerold Christoper Portfolio
-  url: https://www.jerold-dev.me
-  sitemap_url: https://www.jerold-dev.me/sitemap.xml
-  robots_url: https://www.jerold-dev.me/robots.txt
+  url: https://jerold-dev.me
+  sitemap_url: https://jerold-dev.me/sitemap.xml
+  robots_url: https://jerold-dev.me/robots.txt
 
 # Only include real crawlable URLs (no section anchors).
 urls:
@@ -30,11 +30,11 @@ urls:
 
 search_consoles:
   google:
-    submit_endpoint: "https://www.google.com/ping?sitemap=https://www.jerold-dev.me/sitemap.xml"
+    submit_endpoint: "https://www.google.com/ping?sitemap=https://jerold-dev.me/sitemap.xml"
     console_url: "https://search.google.com/search-console"
 
   bing:
-    submit_endpoint: "https://www.bing.com/ping?sitemap=https://www.jerold-dev.me/sitemap.xml"
+    submit_endpoint: "https://www.bing.com/ping?sitemap=https://jerold-dev.me/sitemap.xml"
     webmaster_url: "https://www.bing.com/webmasters"
     notes:
       - "Bing indexing data is used by Microsoft Edge discovery surfaces."
@@ -52,6 +52,6 @@ search_consoles:
 indexnow:
   enabled: false
   endpoint: "https://api.indexnow.org/indexnow"
-  host: www.jerold-dev.me
+  host: jerold-dev.me
   key: "replace-with-your-indexnow-key"
-  key_location: "https://www.jerold-dev.me/replace-with-your-indexnow-key.txt"
+  key_location: "https://jerold-dev.me/replace-with-your-indexnow-key.txt"
