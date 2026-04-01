@@ -36,7 +36,7 @@ npm run test
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and set values.
+Copy `.env.example` to `.env` and set values
 
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_TO_EMAIL` for contact email API
 - `GITHUB_TOKEN`, `GITHUB_USERNAME` for exact GitHub contribution calendar syncing
