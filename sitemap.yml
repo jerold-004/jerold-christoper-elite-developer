@@ -12,6 +12,21 @@ urls:
   - loc: /
     changefreq: weekly
     priority: 1.0
+  - loc: /about
+    changefreq: weekly
+    priority: 0.9
+  - loc: /skills
+    changefreq: weekly
+    priority: 0.9
+  - loc: /projects
+    changefreq: weekly
+    priority: 0.9
+  - loc: /experience
+    changefreq: weekly
+    priority: 0.9
+  - loc: /contact
+    changefreq: weekly
+    priority: 0.9
 
 search_consoles:
   google:
