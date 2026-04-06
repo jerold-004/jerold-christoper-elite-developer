@@ -34,7 +34,6 @@ npm run preview
 npm run test
 ```
 
-## Environment Variables
 
 Copy `.env.example` to `.env` and set values
 
