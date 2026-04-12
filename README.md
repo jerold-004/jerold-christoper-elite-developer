@@ -33,7 +33,7 @@ npm run preview
 ```sh
 npm run test
 ```
-
+# setting env
 
 Copy `.env.example` to `.env` and set values
 
