@@ -1,12 +1,33 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Github, Linkedin, Mail, Instagram, Code2 } from "lucide-react";
+import { Send, Github, Linkedin, Mail, Instagram } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { toast } from "sonner";
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 const sendEmailEndpoint = apiBaseUrl ? `${apiBaseUrl}/api/send-email` : "/api/send-email";
+
+const LeetCodeLogo = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-hidden="true"
+  >
+    <path
+      d="M15.7 4.5a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-7.3 7.3a1 1 0 0 1-1.4-1.4l6.6-6.6-2.3-2.3a1 1 0 0 1 0-1.4Z"
+      fill="#FFA116"
+    />
+    <path
+      d="M8.8 8.6a1 1 0 0 1 1.4 0 1 1 0 0 1 0 1.4L7.2 13l3 3a1 1 0 0 1-1.4 1.4l-3.7-3.7a1 1 0 0 1 0-1.4L8.8 8.6Z"
+      fill="currentColor"
+      opacity="0.9"
+    />
+    <rect x="6.2" y="11.6" width="11.5" height="1.8" rx="0.9" fill="currentColor" />
+  </svg>
+);
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -67,7 +88,7 @@ const Contact = () => {
             {[
               { icon: Github, href: "https://github.com/JEROLD-creator653", label: "GitHub" },
               { icon: Linkedin, href: "https://linkedin.com/in/jerold-christoper-g", label: "LinkedIn" },
-              { icon: Code2, href: "https://leetcode.com/u/jerold_0808/", label: "LeetCode" },
+              { icon: LeetCodeLogo, href: "https://leetcode.com/u/jerold_0808/", label: "LeetCode" },
               { icon: Instagram, href: "https://www.instagram.com/jerold_0808/", label: "Instagram" },
               { icon: Mail, href: "mailto:jeroldchristoperg@gmail.com", label: "Email" },
             ].map(({ icon: Icon, href, label }) => (
