@@ -57,7 +57,7 @@ const About = () => {
           >
             {[
               { label: "Projects", value: 15, suffix: "+", places: [10, 1] },
-              { label: "Contributions", value: 550,suffix: "+", places: [100, 10, 1] },
+              { label: "Contributions", value: 900,suffix: "+", places: [100, 10, 1] },
               { label: "Technologies", value: 20, suffix: "+", places: [10, 1] },
             ].map((stat) => (
               <div key={stat.label} className="glass rounded-2xl px-6 py-4 text-center">
