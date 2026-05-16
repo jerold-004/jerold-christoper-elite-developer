@@ -31,20 +31,20 @@ const About = () => {
           <h2 className="text-3xl md:text-4xl font-bold">
             Crafting the future, <span className="gradient-text">one line at a time</span>
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             I'm Jerold Christoper, a Full Stack Developer and AI/ML enthusiast focused on building
             intelligent, scalable software solutions that solve real-world problems. I am currently
             pursuing B.E. in Computer Science Engineering (Artificial Intelligence and Machine Learning)
             at Sri Sairam Engineering College.
           </p>
          
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             I actively explore the intersection of artificial intelligence, backend systems, and modern
             web technologies to create impactful digital products. My work includes a machine
             learning-based UPI fraud detection system, PathFindAR intelligent navigation platform,
             and a production-ready e-commerce application built with scalable architecture.
           </p>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             My technical focus spans machine learning, backend development, and full-stack application
             design using Python, Java, React, Next.js, Node.js, and modern AI frameworks. Driven by
             curiosity and continuous learning, I aim to contribute to intelligent systems and AI-powered
