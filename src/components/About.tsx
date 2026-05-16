@@ -15,12 +15,19 @@ const About = () => {
       >
         {/* Image */}
         <motion.div variants={staggerItem} className="flex justify-center">
-          <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden gradient-border">
+          <div
+            className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden gradient-border"
+            onContextMenu={(e) => e.preventDefault()}
+          >
             <img
               src="/me2.png"
               alt="Jerold Christoper"
               className="w-full h-full object-cover"
               loading="lazy"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{ WebkitUserDrag: "none", userSelect: "none" } as any}
             />
           </div>
         </motion.div>
